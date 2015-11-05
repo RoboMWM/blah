@@ -1,0 +1,5 @@
+name: blah
+version: 0.0.1
+author: RoboMWM
+main: me.robomwm.blah.Main
+depend: [ GriefPrevention ]
