@@ -6,10 +6,12 @@ public class Main extends JavaPlugin
     @Override
     public void onEnable()
     {
-        getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        getServer().getPluginManager().registerEvents(new CommandListener(), this);
     }
 
     @Override
     public void onDisable()
-    {}
+    {
+        //I don't need anything here, right?
+    }
 }

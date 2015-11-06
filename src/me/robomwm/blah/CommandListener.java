@@ -11,7 +11,7 @@ import me.ryanhamshire.GriefPrevention.DataStore;
 
 import static org.bukkit.Bukkit.getServer;
 
-public class ChatListener implements Listener
+public class CommandListener implements Listener
 {
     GriefPrevention gp = (GriefPrevention)getServer().getPluginManager().getPlugin("GriefPrevention");
     DataStore ds = gp.dataStore;
