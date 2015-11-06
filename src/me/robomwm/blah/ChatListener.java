@@ -1,17 +1,17 @@
 package me.robomwm.blah;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import me.ryanhamshire.GriefPrevention.DataStore;
 
+import static org.bukkit.Bukkit.getServer;
+
 public class ChatListener implements Listener
 {
-    GriefPrevention gp;
+    GriefPrevention gp = (GriefPrevention)getServer().getPluginManager().getPlugin("GriefPrevention");
     DataStore ds = gp.dataStore;
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerCommandPreprocess (PlayerCommandPreprocessEvent event)
