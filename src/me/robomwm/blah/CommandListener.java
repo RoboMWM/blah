@@ -2,6 +2,7 @@ package me.robomwm.blah;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -39,8 +40,13 @@ public class CommandListener implements Listener
             //Otherwise check if sender is softmuted in GriefPrevention
             else if (ds.isSoftMuted((sender.getUniqueId())))
             {
-                if (trySoftMessage(sender, args));
+                //if (trySoftMessage(sender, args));
+                //Apparently that above statement, even though it returns false,
+                //will run code as if true...
+                boolean shouldICancel = trySoftMessage(sender, args);
+                if (shouldICancel)
                     event.setCancelled(true);
+
             }
         }
 
