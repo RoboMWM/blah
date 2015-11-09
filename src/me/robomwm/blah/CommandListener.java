@@ -41,8 +41,9 @@ public class CommandListener implements Listener
             else if (ds.isSoftMuted((sender.getUniqueId())))
             {
                 //if (trySoftMessage(sender, args));
-                //Apparently that above statement, even though it returns false,
-                //will run code as if true...
+                    //event.setCancelled(true);
+                //Apparently that above statement, even if the method returns false,
+                //will still run event.setCancelled(true)
                 boolean shouldICancel = trySoftMessage(sender, args);
                 if (shouldICancel)
                     event.setCancelled(true);
