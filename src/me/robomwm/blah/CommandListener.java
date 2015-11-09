@@ -40,12 +40,7 @@ public class CommandListener implements Listener
             //Otherwise check if sender is softmuted in GriefPrevention
             else if (ds.isSoftMuted((sender.getUniqueId())))
             {
-                //if (trySoftMessage(sender, args));
-                    //event.setCancelled(true);
-                //Apparently that above statement, even if the method returns false,
-                //will still run event.setCancelled(true)
-                boolean shouldICancel = trySoftMessage(sender, args);
-                if (shouldICancel)
+                if (trySoftMessage(sender, args))
                     event.setCancelled(true);
             }
         }
