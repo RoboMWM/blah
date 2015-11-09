@@ -2,6 +2,7 @@ package me.robomwm.blah;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -16,48 +17,69 @@ public class CommandListener implements Listener
 {
     GriefPrevention gp = (GriefPrevention)getServer().getPluginManager().getPlugin("GriefPrevention");
     DataStore ds = gp.dataStore;
-    private boolean shouldICheck = true;
-    @EventHandler(ignoreCancelled = false, priority = EventPriority.LOW)
+    private boolean didIUnCancel = false;
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-        if (shouldICheck)
+        Bukkit.broadcastMessage(String.valueOf(didIUnCancel));
+        String message = event.getMessage();
+        String [] args = message.split(" ");
+        String command = args[0].toLowerCase();
+        Player sender = event.getPlayer();
+
+        //Check if the command is a whisper
+        if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")) && args.length > 2)
         {
-            String message = event.getMessage();
-            String [] args = message.split(" ");
-            String command = args[0].toLowerCase();
-            Player sender = event.getPlayer();
-
-            //If the command is not a whisper, check if it is a /me command
-            if (gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell") && args.length > 2)
+            //if we uncancelled (and nothing else cancelled it),
+            if (didIUnCancel)
             {
-                if (trySoftMessage(sender, args))
-                    event.setCancelled(true);
+                trySoftIgnore(sender, args); //try the softIgnore feature,
+                event.setCancelled(true); //reset event status,
+                return; //and get out
             }
-
-            //Me command softmute, only if event is not cancelled and sender is softmuted
-            else if (ds.isSoftMuted((sender.getUniqueId())))
+            else
             {
-                if (command.equals("/me") || command.equals("/minecraft:me") && args.length > 1)
-                {
-                    softMe(sender, args);
+                if (trySoftMessage(sender, args));
                     event.setCancelled(true);
-                }
             }
         }
 
+        //If command is not a whisper and we uncancelled it
+        else if (didIUnCancel)
+        {
+            event.setCancelled(true); //set it back to cancelled,
+            return; //and get out.
+        }
+
+        //Otherwise, check if it's a /me command
+        else if ((command.equals("/me") || command.equals("/minecraft:me")) && args.length > 1)
+        {
+            if (ds.isSoftMuted((sender.getUniqueId())))
+            {
+                softMe(sender, args);
+                event.setCancelled(true);
+            }
+            //TODO: include ignores if not expensive/stupid
+            //for loop of online players, checking to see if sender isIgnored
+        }
     }
 
-    //Checks if something other than GriefPrevention cancelled the event beforehand.
-    //e.g. A player is muted in another plugin, blocking /plugin:command syntax, etc.
-    //This is to workaround GriefPrevention's simple cancelling of /tell and /me
+    //Uncancels GriefPrevention's simple cancelling of /tell when either
+    //player is ignoring the other, allowing us to trySoftIgnore
     @EventHandler(ignoreCancelled = false, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess2(PlayerCommandPreprocessEvent event)
     {
         if (event.isCancelled())
-            shouldICheck = false;
+        {
+            didIUnCancel = true;
+            event.setCancelled(false);
+        }
         else
-            shouldICheck = true;
+            didIUnCancel = false;
     }
+
+    // ------------ Methods ---------------- //
+
     public void sendSoftMessage(Player sender, String[] args, Player target)
     {
         String pm = ":";
@@ -73,7 +95,7 @@ public class CommandListener implements Listener
             pm += (" " + args[i]);
         sender.sendMessage("* " + sender.getName() + pm);
         //TODO: logic to getonline players, then ask GP if they're softmuted in a for loop. If yes, send message.
-        //Would this be expensive on larger servers?
+        //Would this be expensive on larger servers? Or I could just not care and not do this, since they're muted for a reason.
     }
     //Basically a copy of
     //https://github.com/ryanhamshire/GriefPrevention/blob/7067db624de85e153488cbe41afbcc1c8e948754/src/me/ryanhamshire/GriefPrevention/PlayerEventHandler.java#L532
@@ -87,7 +109,7 @@ public class CommandListener implements Listener
         if (playerData.ignoredPlayers.containsKey(target.getUniqueId()))
         {
             //Send info message if player is ignoring their recipient
-            sender.sendMessage(ChatColor.RED + "You need to " + ChatColor.GOLD + "/unignore " + sender.getName() +
+            sender.sendMessage(ChatColor.RED + "You need to " + ChatColor.GOLD + "/unignore " + target.getName() +
             ChatColor.RED + " to send them a whisper.");
             return false;
         }
@@ -108,14 +130,7 @@ public class CommandListener implements Listener
         else
             return false;
 
-        //First check if either player is ignoring the other
-        if (isIgnored(sender, target))
-        {
-            sendSoftMessage(sender, args, target);
-            return true;
-        }
-
-        //Otherwise see if sender is softmuted in GriefPrevention (if event is not cancelled)
+        //See if sender is softmuted in GriefPrevention
         if (ds.isSoftMuted((sender.getUniqueId())))
         {
             //We don't care if sender is also the recipient
@@ -129,6 +144,24 @@ public class CommandListener implements Listener
                 return false;
         }
         else
+            return false;
+    }
+    public boolean trySoftIgnore(Player sender, String[] args)
+    {
+        Player target;
+        //Check if recipient is online
+        if (getServer().getPlayerExact(args[1]) != null) {
+            target = getServer().getPlayerExact(args[1]);
+        }
+        //Otherwise we don't care
+        else
+            return false;
+
+        //First check if either player is ignoring the other
+        if (isIgnored(sender, target)) {
+            sendSoftMessage(sender, args, target);
+            return true;
+        } else
             return false;
     }
 }
