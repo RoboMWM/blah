@@ -3,4 +3,4 @@ version: 1.0.0
 author: RoboMWM
 main: me.robomwm.blah.Main
 depend: [GriefPrevention]
-softdepend: [boosCoolDowns, BlockSyntax]
+loadbefore: [boosCoolDowns, BlockSyntax]
