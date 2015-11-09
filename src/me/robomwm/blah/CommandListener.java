@@ -2,7 +2,6 @@ package me.robomwm.blah;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -21,7 +20,6 @@ public class CommandListener implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-        Bukkit.broadcastMessage(String.valueOf(didIUnCancel));
         String message = event.getMessage();
         String [] args = message.split(" ");
         String command = args[0].toLowerCase();
@@ -37,7 +35,9 @@ public class CommandListener implements Listener
                 event.setCancelled(true); //reset event status,
                 return; //and get out
             }
-            else
+
+            //Otherwise check if sender is softmuted in GriefPrevention
+            else if (ds.isSoftMuted((sender.getUniqueId())))
             {
                 if (trySoftMessage(sender, args));
                     event.setCancelled(true);
@@ -129,19 +129,12 @@ public class CommandListener implements Listener
         //Otherwise we don't care
         else
             return false;
-
-        //See if sender is softmuted in GriefPrevention
-        if (ds.isSoftMuted((sender.getUniqueId())))
+        //We don't care if sender is also the recipient
+        //or if receiver is also softmuted
+        if ((sender != target) && !ds.isSoftMuted(target.getUniqueId()))
         {
-            //We don't care if sender is also the recipient
-            //or if both sender and receiver are softmuted
-            if (target != sender && !ds.isSoftMuted(target.getUniqueId()))
-            {
-                sendSoftMessage(sender, args, target);
-                return true;
-            }
-            else
-                return false;
+            sendSoftMessage(sender, args, target);
+            return true;
         }
         else
             return false;
