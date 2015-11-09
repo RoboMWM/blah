@@ -43,10 +43,9 @@ public class CommandListener implements Listener
                 //if (trySoftMessage(sender, args));
                 //Apparently that above statement, even though it returns false,
                 //will run code as if true...
-                boolean shouldICancel = trySoftMessage(sender, args);
+                boolean shouldICancel == trySoftMessage(sender, args);
                 if (shouldICancel)
                     event.setCancelled(true);
-
             }
         }
 
