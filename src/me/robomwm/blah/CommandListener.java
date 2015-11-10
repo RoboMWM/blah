@@ -2,7 +2,6 @@ package me.robomwm.blah;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -68,7 +67,7 @@ public class CommandListener implements Listener
     //Uncancels GriefPrevention's simple cancelling of /tell when either
     //player is ignoring the other, allowing us to trySoftIgnore
     @EventHandler(ignoreCancelled = false, priority = EventPriority.LOWEST)
-    public void onPlayerCommandPreprocess2(PlayerCommandPreprocessEvent event)
+    public void unCancelPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
         if (event.isCancelled())
         {
