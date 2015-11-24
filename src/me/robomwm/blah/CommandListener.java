@@ -22,6 +22,16 @@ public class CommandListener implements Listener
     {
         String message = event.getMessage();
         String [] args = message.split(" ");
+        
+        //if we uncancelled (and nothing else cancelled it),
+        if (didIUnCancel)
+        {
+            Player sender = event.getPlayer();
+            trySoftIgnore(sender, args); //try the softIgnore feature,
+            event.setCancelled(true); //reset event status,
+            return; //and get out
+        }
+        
         //We don't care if it's just a command without arguments
         if (args.length < 2)
             return;
@@ -31,29 +41,13 @@ public class CommandListener implements Listener
         if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")) && args.length > 2)
         {
             Player sender = event.getPlayer();
-            //if we uncancelled (and nothing else cancelled it),
-            if (didIUnCancel)
-            {
-                trySoftIgnore(sender, args); //try the softIgnore feature,
-                event.setCancelled(true); //reset event status,
-                return; //and get out
-            }
-
-            //Otherwise check if sender is softmuted in GriefPrevention
-            else if (ds.isSoftMuted((sender.getUniqueId())))
+            //Check if sender is softmuted in GriefPrevention
+            if (ds.isSoftMuted((sender.getUniqueId())))
             {
                 if (trySoftMessage(sender, args))
                     event.setCancelled(true);
             }
         }
-
-        //If command is not a whisper and we uncancelled it
-        else if (didIUnCancel)
-        {
-            event.setCancelled(true); //set it back to cancelled,
-            return; //and get out.
-        }
-
         //Otherwise, check if it's a /me command
         else if ((command.equals("/me") || command.equals("/minecraft:me")) && args.length > 1)
         {
@@ -75,8 +69,20 @@ public class CommandListener implements Listener
     {
         if (event.isCancelled())
         {
-            didIUnCancel = true;
-            event.setCancelled(false);
+            String message = event.getMessage();
+            String [] args = message.split(" ");
+            if (args.length < 3)
+            {
+                didIUnCancel = false;
+                return;
+            }
+            else if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")))
+            {
+                didIUnCancel = true;
+                event.setCancelled(false);
+            }
+            else
+                didiIUnCancel = false;
         }
         else
             didIUnCancel = false;
