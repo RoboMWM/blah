@@ -4,4 +4,4 @@ website: https://www.spigotmc.org/resources/complete-softmute-vanilla-version.14
 author: RoboMWM
 main: me.robomwm.blah.Main
 depend: [GriefPrevention]
-loadbefore: [boosCoolDowns, BlockSyntax]
+loadbefore: [boosCooldowns, BlockSyntax]
