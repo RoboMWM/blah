@@ -26,10 +26,20 @@ public class CommandListener implements Listener
         //if we uncancelled (and nothing else cancelled it),
         if (didIUnCancel)
         {
-            Player sender = event.getPlayer();
-            trySoftIgnore(sender, args); //try the softIgnore feature,
-            event.setCancelled(true); //reset event status,
-            return; //and get out
+            //If it's a whisper
+            if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")) && args.length > 2)
+            {
+                Player sender = event.getPlayer();
+                trySoftIgnore(sender, args); //try the softIgnore feature,
+                event.setCancelled(true); //reset event status,
+                return; //and get out
+            }
+            //Otherwise we uncancelled something else (potentially some anti-spam plugin)
+            else
+            {
+                event.setCancelled(true); //reset event status,
+                return; //and get out
+            }
         }
         
         //We don't care if it's just a command without arguments
@@ -70,20 +80,8 @@ public class CommandListener implements Listener
     {
         if (event.isCancelled())
         {
-            String message = event.getMessage();
-            String [] args = message.split(" ");
-            if (args.length < 3)
-            {
-                didIUnCancel = false;
-                return;
-            }
-            else if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")))
-            {
-                didIUnCancel = true;
-                event.setCancelled(false);
-            }
-            else
-                didiIUnCancel = false;
+            didIUnCancel = true;
+            event.setCancelled(false);
         }
         else
             didIUnCancel = false;
