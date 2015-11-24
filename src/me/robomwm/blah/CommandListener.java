@@ -115,7 +115,7 @@ public class CommandListener implements Listener
             //Send info message if player is ignoring their recipient
             sender.sendMessage(ChatColor.RED + "You need to " + ChatColor.GOLD + "/unignore " + target.getName() +
             ChatColor.RED + " to send them a whisper.");
-            return false;
+            return false; //BEWARE TO COPY-PASTERS (i.e. myself, of my own code of course): Returns false so trySoftIgnore() doesn't sendSoftMessage().
         }
         else
             return false;
@@ -155,10 +155,12 @@ public class CommandListener implements Listener
             return false;
 
         //First check if either player is ignoring the other
-        if (isIgnored(sender, target)) {
+        if (isIgnored(sender, target))
+        {
             sendSoftMessage(sender, args, target);
             return true;
-        } else
+        }
+        else
             return false;
     }
 }
