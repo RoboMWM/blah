@@ -26,6 +26,7 @@ public class CommandListener implements Listener
         //if we uncancelled (and nothing else cancelled it),
         if (didIUnCancel)
         {
+            String command = args[0].toLowerCase();
             //If it's a whisper
             if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")) && args.length > 2)
             {
