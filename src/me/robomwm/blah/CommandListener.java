@@ -17,7 +17,7 @@ public class CommandListener implements Listener
     GriefPrevention gp = (GriefPrevention)getServer().getPluginManager().getPlugin("GriefPrevention");
     DataStore ds = gp.dataStore;
     private boolean didIUnCancel = false;
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
         String message = event.getMessage();
@@ -35,6 +35,7 @@ public class CommandListener implements Listener
         //We don't care if it's just a command without arguments
         if (args.length < 2)
             return;
+            
         String command = args[0].toLowerCase();
 
         //Check if the command is a whisper
