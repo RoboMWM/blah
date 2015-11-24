@@ -1,7 +1,7 @@
 name: CompleteSoftmuteVanilla
-version: 1.1.1
+version: 1.2
 website: https://www.spigotmc.org/resources/complete-softmute-vanilla-version.14272/
 author: RoboMWM
 main: me.robomwm.blah.Main
 depend: [GriefPrevention]
-loadbefore: [boosCooldowns, BlockSyntax]
+loadbefore: [boosCooldowns]
