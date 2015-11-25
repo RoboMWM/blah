@@ -27,7 +27,7 @@ public class CommandListener implements Listener
         if (didIUnCancel)
         {
             String command = args[0].toLowerCase();
-            //If it's a whisper
+            //If it's a whisper (with a recipient and message)
             if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")) && args.length > 2)
             {
                 Player sender = event.getPlayer();
@@ -49,7 +49,7 @@ public class CommandListener implements Listener
             
         String command = args[0].toLowerCase();
 
-        //Check if the command is a whisper
+        //Check if the command is a whisper (with a recipient and message)
         if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")) && args.length > 2)
         {
             Player sender = event.getPlayer();
@@ -61,7 +61,7 @@ public class CommandListener implements Listener
             }
         }
         //Otherwise, check if it's a /me command
-        else if ((command.equals("/me") || command.equals("/minecraft:me")) && args.length > 1)
+        else if (command.equals("/me") || command.equals("/minecraft:me"))
         {
             Player sender = event.getPlayer();
             if (ds.isSoftMuted((sender.getUniqueId())))
