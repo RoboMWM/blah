@@ -99,15 +99,15 @@ public class CommandListener implements Listener
     {
         PlayerData playerData = ds.getPlayerData(target.getPlayer().getUniqueId());
         if (playerData.ignoredPlayers.containsKey(sender.getUniqueId()))
-            return 1;
+            return 1; //target ignoring sender
         playerData = ds.getPlayerData(sender.getPlayer().getUniqueId());
         if (playerData.ignoredPlayers.containsKey(target.getUniqueId()))
         {
 
-            return 2;
+            return 2; //sender ignoring target
         }
         else
-            return 0;
+            return 0; //neither ignoring each other
     }
 
     // ------------ Methods that execute the above methods accordingly, and return success or failure ---------------- //
