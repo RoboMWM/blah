@@ -20,18 +20,19 @@ public class CommandListener implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-        //There's no reason to do anything if we didn't uncancel the event since now GP cancels everything we check for
+        //There's no reason to do anything if we didn't uncancel the event
+        // since now GP cancels everything we check for
         if (!didIUnCancel)
             return;
 
         String message = event.getMessage();
         String [] args = message.split(" ");
         String command = args[0].toLowerCase();
-        Player sender = event.getPlayer();
 
         //If it's a whisper (with a recipient and message)
         if ((gp.config_eavesdrop_whisperCommands.contains(command) || command.equals("/minecraft:tell")) && args.length > 2)
         {
+            Player sender = event.getPlayer();
             //Always try ignore first (overrides softmute)
             if (trySoftIgnore(sender, args))
             {}
@@ -41,9 +42,10 @@ public class CommandListener implements Listener
                 trySoftMessage(sender, args);
             }
         }
-        //If not a whisper, check if it's a /me command
+        //If not a whisper, check if it's a /me (action) command
         else if (command.equals("/me") || command.equals("/minecraft:me"))
         {
+            Player sender = event.getPlayer();
             if (ds.isSoftMuted((sender.getUniqueId())))
             {
                 softMe(sender, args);
@@ -52,10 +54,12 @@ public class CommandListener implements Listener
             //for loop of online players, checking to see if sender isIgnored
         }
 
-        event.setCancelled(true); //reset event status
+        event.setCancelled(true); //reset event status (we uncancelled, remember?)
     }
 
     //Uncancels GriefPrevention's simple cancelling of, well everything
+    //Q: Why not just ignoreCancelled = false for above listener?
+    //A: To make this compatible with other plugins that limit commands in general (e.g. pluginname:command syntax or general command cooldown)
     @EventHandler(ignoreCancelled = false, priority = EventPriority.LOWEST)
     public void unCancelPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
@@ -156,6 +160,7 @@ public class CommandListener implements Listener
         else if (ignoring == 2)
         {
             //Tell them they need to unignore them first
+            //TODO: Make this configurable in configurable version
             sender.sendMessage(ChatColor.RED + "You need to " + ChatColor.GOLD + "/unignore " + target.getName() + ChatColor.RED + " to send them a whisper.");
             return true;
         }
