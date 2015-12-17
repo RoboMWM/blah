@@ -24,6 +24,8 @@ public class CommandListener implements Listener
         // since now GP cancels everything we check for
         if (!didIUnCancel)
             return;
+            
+        event.setCancelled(true); //reset event status (doing it now in case logic prematurely returns for whatever reason)
 
         String message = event.getMessage();
         String [] args = message.split(" ");
@@ -53,8 +55,6 @@ public class CommandListener implements Listener
             //TODO: include ignores if not expensive/stupid
             //for loop of online players, checking to see if sender isIgnored
         }
-
-        event.setCancelled(true); //reset event status (we uncancelled, remember?)
     }
 
     //Uncancels GriefPrevention's simple cancelling of, well everything
